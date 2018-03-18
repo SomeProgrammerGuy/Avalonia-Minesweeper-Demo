@@ -9,6 +9,10 @@
             <Style Selector="Button:disabled">
                 <Setter Property="Opacity" Value="1"/>
             </Style>
+            <Style Selector="Button Image">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
         </Grid.Styles>
         
         <Grid.RowDefinitions>

@@ -9,6 +9,8 @@ namespace Minesweeper
 
         public bool IsMine { get; set; }
 
+        public bool IsExplodedMine { get; set; }
+
         public int Value { get; set; }
 
         public bool IsRevealed { get; set; }

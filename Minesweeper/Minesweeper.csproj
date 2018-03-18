@@ -19,6 +19,12 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.6.1" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Resources\CoolFace.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\ExplodedMine.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Flag.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

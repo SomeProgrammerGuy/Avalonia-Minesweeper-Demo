@@ -13,16 +13,14 @@ namespace Minesweeper
 
         private int _activeFlags;
 
-        private bool _isFirstTileReveal;
-
-        public bool IsGameActive { get; set; }
-
         public int FlagScore
         {
             get { return _mineCount - _activeFlags; }
 
             set { _activeFlags = _activeFlags + value; }
         }
+
+        public GameState State { get; set; }
 
         public Tile[,] GameGrid { get; }
 
@@ -38,9 +36,7 @@ namespace Minesweeper
 
         public void Start()
         {
-            IsGameActive = true;
-
-            _isFirstTileReveal = true;
+            State = GameState.Start;
 
             _activeFlags = 0;
 
@@ -55,10 +51,11 @@ namespace Minesweeper
                 {
                     GameGrid[row, column] = new Tile
                     {
-                        IsFlag     = false,
-                        IsMine     = false,
-                        Value      = 0,
-                        IsRevealed = false
+                        IsFlag         = false,
+                        IsMine         = false,
+                        IsExplodedMine = false,
+                        Value          = 0,
+                        IsRevealed     = false
                     };
                 }
             }
@@ -66,12 +63,13 @@ namespace Minesweeper
 
         public void RevealTile(int row, int column)
         {
-            if (_isFirstTileReveal)
-            {
-                // The game grid doesnt contain any bombs on the
-                // first selection as it makes the game unfair.
+            // The game grid doesnt contain any mines on the
+            // first selection as it makes the game unfair so
+            // they are generated after the first tile is opened.
 
-                _isFirstTileReveal = false;
+            if (State == GameState.Start)
+            {
+                State = GameState.Running;
 
                 AddMinesToGameGrid(row, column);
 
@@ -84,13 +82,10 @@ namespace Minesweeper
             }
             else if (GameGrid[row, column].IsMine)
             {
-                // A mine has been hit so end the game.
-
-                // TODO: Show red mine.
-
-                IsGameActive = false;
-
+                State = GameState.Lost;
+                GameGrid[row, column].IsExplodedMine = true;
                 RevealAllTiles();
+                return;
             }
             else if (GameGrid[row, column].Value > 0)
             {
@@ -100,6 +95,12 @@ namespace Minesweeper
             {
                 GameGrid[row, column].IsRevealed = true;
                 ExpandEmptyTile(row, column);
+            }
+
+            if (IsGameWon())
+            {
+                State = GameState.Won;
+                RevealAllTiles();
             }
         }
 
@@ -114,6 +115,33 @@ namespace Minesweeper
             }
         }
 
+        /// <summary>
+        /// The game of minesweeper is won at the point when all tiles 
+        /// that are not mines are clicked open.
+        /// 
+        /// When there are (_rowcount * _columnCount) - _mineCount 
+        /// non mine tiles that are revealed the game is won.
+        /// </summary>
+        /// <returns></returns>
+
+        private bool IsGameWon()
+        {
+            int revealedTileCount = 0;
+
+            for (int row = 0; row < _rowCount; row++)
+            {
+                for (int column = 0; column < _columnCount; column++)
+                {
+                    if (GameGrid[row, column].IsRevealed && !GameGrid[row, column].IsMine)
+                    {
+                        revealedTileCount++;
+                    }
+                }
+            }
+
+            return revealedTileCount == (_rowCount * _columnCount) - _mineCount ? true : false;
+        }
+
         private void ExpandEmptyTile(int row, int column)
         {
             for (int r = row - 1; r <= row + 1; ++r)
@@ -122,14 +150,11 @@ namespace Minesweeper
                 {
                     if (IsInsideGameGrid(r, c) && !GameGrid[r, c].IsRevealed && !GameGrid[r, c].IsFlag)
                     {
+                        GameGrid[r, c].IsRevealed = true;
+
                         if (GameGrid[r, c].Value == 0)
                         {
-                            GameGrid[r, c].IsRevealed = true;
                             ExpandEmptyTile(r, c);
-                        }
-                        else
-                        {
-                            GameGrid[r, c].IsRevealed = true;
                         }
                     }
                 }

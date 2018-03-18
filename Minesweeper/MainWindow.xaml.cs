@@ -23,9 +23,11 @@ namespace Minesweeper
 
         Bitmap _happyFaceBitmap;
         Bitmap _unhappyFaceBitmap;
+        Bitmap _coolFaceBitmap;
 
         Bitmap _flagBitmap;
         Bitmap _mineBitmap;
+        Bitmap _explodedMineBitmap;
 
         private Button _restartButton;
 
@@ -58,9 +60,11 @@ namespace Minesweeper
 
             _happyFaceBitmap   = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "HappyFace.png");
             _unhappyFaceBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "UnhappyFace.png");
+            _coolFaceBitmap    = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "CoolFace.png");
 
-            _flagBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "Flag.png");
-            _mineBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "Mine.png");
+            _flagBitmap         = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "Flag.png");
+            _mineBitmap         = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "Mine.png");
+            _explodedMineBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "ExplodedMine.png");
 
             // Apply the color to the main window.
             this.Background = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) };
@@ -82,7 +86,7 @@ namespace Minesweeper
 
             ResetEmptyButtonGrid();
 
-            PaintGameGrid();
+            PaintGame();
         }
 
         private void CreateEmptyButtonGrid()
@@ -170,7 +174,7 @@ namespace Minesweeper
 
                         button.Content = new Image
                         {
-                            Source = _flagBitmap,
+                            Source            = _flagBitmap,
                             VerticalAlignment = VerticalAlignment.Center
                         };
 
@@ -178,11 +182,44 @@ namespace Minesweeper
                     }
                 }
 
-                PaintGameGrid();
+                PaintGame();
             }
         }
 
-        private void PaintGameGrid()
+        private void PaintGame()
+        {
+            PaintDashboard();
+            PaintGrid();
+        }
+
+        private void PaintDashboard()
+        {
+            // Display the restart button image.
+            Bitmap restartButtonBitmapSource;
+
+            if (_game.State == GameState.Lost)
+            {
+                restartButtonBitmapSource = _unhappyFaceBitmap;
+            }
+            else if (_game.State == GameState.Won)
+            {
+                restartButtonBitmapSource = _coolFaceBitmap;
+            }
+            else
+            {
+                restartButtonBitmapSource = _happyFaceBitmap;
+            }
+
+            _restartButton.Content = new Image
+            {
+                Source = restartButtonBitmapSource
+            };
+
+            // Display the flag count.
+            _flagScore.Text = _game.FlagScore.ToString();
+        }
+
+        private void PaintGrid()
         {
             for (int row = 0; row < ROW_COUNT; row++)
             {
@@ -195,10 +232,27 @@ namespace Minesweeper
 
                         if (_game.GameGrid[row, column].IsMine)
                         {
+                            Bitmap tileBitmapSource;
+
+                            if (_game.State == GameState.Won)
+                            {
+                                tileBitmapSource = _flagBitmap;
+                            }
+                            else
+                            {
+                                if (_game.GameGrid[row, column].IsExplodedMine)
+                                {
+                                    tileBitmapSource = _explodedMineBitmap;
+                                }
+                                else
+                                {
+                                    tileBitmapSource = _mineBitmap;
+                                }
+                            }
+
                             _displayGrid[row, column].Content = new Image
                             {
-                                Source            = _mineBitmap,
-                                VerticalAlignment = VerticalAlignment.Center
+                                Source = tileBitmapSource,
                             };
                         }
                         else if (_game.GameGrid[row, column].Value > 0)
@@ -224,34 +278,11 @@ namespace Minesweeper
                                 _displayGrid[row, column].Foreground = Brushes.Brown;
                             }
 
-                            _displayGrid[row, column].Content    = _game.GameGrid[row, column].Value;
+                            _displayGrid[row, column].Content = _game.GameGrid[row, column].Value;
                         }
-
                     }
-
-                    if (_game.IsGameActive)
-                    {
-                        _restartButton.Content = new Image
-                        {
-                            Source              = _happyFaceBitmap,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment   = VerticalAlignment.Center
-                        };
-                    }
-                    else
-                    {
-                        _restartButton.Content = new Image
-                        {
-                            Source              = _unhappyFaceBitmap,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment   = VerticalAlignment.Center
-                        };
-                    }
-
-                    _flagScore.Text = _game.FlagScore.ToString();
                 }
             }
         }
-
     }
 }
