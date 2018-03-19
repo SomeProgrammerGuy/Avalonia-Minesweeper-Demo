@@ -12,8 +12,9 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Interactivity;
 using Avalonia.Input;
 using Avalonia.Threading;
+using Minesweeper.Models;
 
-namespace Minesweeper
+namespace Minesweeper.Views
 {
     public class MainWindow : Window
     {
@@ -32,14 +33,13 @@ namespace Minesweeper
 
         private TextBox _timer;
 
-
         private Button _restartButton;
 
         private TextBox _flagScore;
 
         private Grid _buttonGridPlaceholder;
 
-        private Button[,] _displayGrid = new Button[ROW_COUNT, COLUMN_COUNT];
+        private Button[,] _buttonGrid = new Button[ROW_COUNT, COLUMN_COUNT];
 
         DispatcherTimer _dispatcherTimer;
 
@@ -64,20 +64,17 @@ namespace Minesweeper
             // Path.Combine with the file name doesnt create the right cross platform folder
             // slash so Path.DirectorySeparatorChar has been used before the filename.
 
-            _happyFaceBitmap   = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "HappyFace.png");
-            _unhappyFaceBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "UnhappyFace.png");
-            _coolFaceBitmap    = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "CoolFace.png");
+            _happyFaceBitmap   = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Assets") + Path.DirectorySeparatorChar.ToString() + "HappyFace.png");
+            _unhappyFaceBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Assets") + Path.DirectorySeparatorChar.ToString() + "UnhappyFace.png");
+            _coolFaceBitmap    = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Assets") + Path.DirectorySeparatorChar.ToString() + "CoolFace.png");
 
-            _flagBitmap         = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "Flag.png");
-            _mineBitmap         = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "Mine.png");
-            _explodedMineBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Resources") + Path.DirectorySeparatorChar.ToString() + "ExplodedMine.png");
+            _flagBitmap         = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Assets") + Path.DirectorySeparatorChar.ToString() + "Flag.png");
+            _mineBitmap         = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Assets") + Path.DirectorySeparatorChar.ToString() + "Mine.png");
+            _explodedMineBitmap = new Bitmap(Path.Combine(Directory.GetCurrentDirectory(), "Assets") + Path.DirectorySeparatorChar.ToString() + "ExplodedMine.png");
 
-            // Apply the color to the main window.
-            this.Background = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) };
-
+            // You need to get a handle to the XAML controls in Avalonia manually.
             _timer = this.FindControl<TextBox>("timer");
-
-            // You need to get XAML controls in Avalonia manually. 
+                         
             _restartButton = this.FindControl<Button>("restart");
             _restartButton.Click += new EventHandler<RoutedEventArgs>(OnRestartButtonClick);
 
@@ -85,13 +82,17 @@ namespace Minesweeper
 
             _buttonGridPlaceholder = this.FindControl<Grid>("grid");
 
+            // Uses Avalonia.Threading to create a background timer.
+            _dispatcherTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, UpdateTimer);
+
             CreateEmptyButtonGrid();
         }
 
+        /// <summary>
+        /// Reset and restart the game.
+        /// </summary>
         private void RestartGame()
         {
-            _dispatcherTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, UpdateTimer);
-
             _game.Start();
 
             ResetEmptyButtonGrid();
@@ -101,6 +102,14 @@ namespace Minesweeper
             PaintGame();
         }
 
+        /// <summary>
+        /// The event handler for the DispatchTimer. 
+        /// 
+        /// This should fire every second once the game has started
+        /// and increment the game counter from 0 to a maximum of 999.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UpdateTimer(object sender, EventArgs e)
         {
             _game.Timer++;
@@ -119,6 +128,10 @@ namespace Minesweeper
             }
         }
 
+        /// <summary>
+        /// Dynamically create and configure to a set of default properties
+        /// a grid of ROW_COUNT * COLUMN_COUNT buttons.
+        /// </summary>
         private void CreateEmptyButtonGrid()
         {
             _buttonGridPlaceholder.Height = ROW_COUNT * BUTTON_SIZE;
@@ -128,7 +141,7 @@ namespace Minesweeper
             {
                 for (int column = 0; column < COLUMN_COUNT; column++)
                 {
-                    _displayGrid[row, column] = new Button
+                    _buttonGrid[row, column] = new Button
                     {
                         Name                = "Button_" + row.ToString() + "_" + column.ToString(),
                         Height              = BUTTON_SIZE,
@@ -144,31 +157,46 @@ namespace Minesweeper
                         FontWeight          = FontWeight.ExtraBold
                     };
 
-                    _displayGrid[row, column].AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
+                    _buttonGrid[row, column].AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
 
-                    _buttonGridPlaceholder.Children.Add(_displayGrid[row, column]);
+                    _buttonGridPlaceholder.Children.Add(_buttonGrid[row, column]);
                 }
             }
         }
 
+        /// <summary>
+        /// Reset all the buttons in the button grid to the 
+        /// default color, content and enable them.
+        /// </summary>
         private void ResetEmptyButtonGrid()
         {
             for (int row = 0; row < ROW_COUNT; row++)
             {
                 for (int column = 0; column < COLUMN_COUNT; column++)
                 {
-                    _displayGrid[row, column].Background = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) };
-                    _displayGrid[row, column].Content    = String.Empty;
-                    _displayGrid[row, column].IsEnabled  = true;
+                    _buttonGrid[row, column].Background = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) };
+                    _buttonGrid[row, column].Content    = String.Empty;
+                    _buttonGrid[row, column].IsEnabled  = true;
                 }
             }
         }
 
+        /// <summary>
+        /// The event handler for the restart button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnRestartButtonClick(object sender, RoutedEventArgs e)
         {
             RestartGame();
         }
 
+        /// <summary>
+        /// The event handler to detect when the left or right mouse button
+        /// has been pressed over one of the buttons in the dynamic button grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPointerPressed(object sender, PointerPressedEventArgs e)
         {
             Button button = sender as Button;
@@ -278,8 +306,8 @@ namespace Minesweeper
                 {
                     if (_game.GameGrid[row, column].IsRevealed)
                     {
-                        _displayGrid[row, column].Background = new SolidColorBrush { Color = Color.FromRgb(223, 221, 221) };
-                        _displayGrid[row, column].IsEnabled = false;
+                        _buttonGrid[row, column].Background = new SolidColorBrush { Color = Color.FromRgb(223, 221, 221) };
+                        _buttonGrid[row, column].IsEnabled = false;
 
                         if (_game.GameGrid[row, column].IsMine)
                         {
@@ -301,7 +329,7 @@ namespace Minesweeper
                                 }
                             }
 
-                            _displayGrid[row, column].Content = new Image
+                            _buttonGrid[row, column].Content = new Image
                             {
                                 Source = tileBitmapSource,
                             };
@@ -310,38 +338,38 @@ namespace Minesweeper
                         {
                             if (_game.GameGrid[row, column].Value == 1)
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Blue;
+                                _buttonGrid[row, column].Foreground = Brushes.Blue;
                             }
                             else if (_game.GameGrid[row, column].Value ==2)
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Green;
+                                _buttonGrid[row, column].Foreground = Brushes.Green;
                             }
                             else if (_game.GameGrid[row, column].Value == 3)
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Red;
+                                _buttonGrid[row, column].Foreground = Brushes.Red;
                             }
                             else if (_game.GameGrid[row, column].Value == 4)
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Purple;
+                                _buttonGrid[row, column].Foreground = Brushes.Purple;
                             }
                             else if (_game.GameGrid[row, column].Value == 5)
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Orange;
+                                _buttonGrid[row, column].Foreground = Brushes.Orange;
                             }
                             else if (_game.GameGrid[row, column].Value == 6)
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Pink;
+                                _buttonGrid[row, column].Foreground = Brushes.Pink;
                             }
                             else if (_game.GameGrid[row, column].Value == 7)
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Yellow;
+                                _buttonGrid[row, column].Foreground = Brushes.Yellow;
                             }
                             else 
                             {
-                                _displayGrid[row, column].Foreground = Brushes.Brown;
+                                _buttonGrid[row, column].Foreground = Brushes.Brown;
                             }
 
-                            _displayGrid[row, column].Content = _game.GameGrid[row, column].Value;
+                            _buttonGrid[row, column].Content = _game.GameGrid[row, column].Value;
                         }
                     }
                 }

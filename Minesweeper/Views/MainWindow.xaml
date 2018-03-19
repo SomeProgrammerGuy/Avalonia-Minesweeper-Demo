@@ -1,8 +1,18 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Minesweeper" Height="500" Width="440" 
+        Title="Minesweeper" 
+        Height="500" Width="440" 
         MinHeight="500" MaxHeight="500"
-        MinWidth="440" MaxWidth="440">
+        MinWidth="440" MaxWidth="440"
+        Background="#bdbdbd">
+
+    <Window.Styles>
+        <Style Selector="Button:disabled">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+    </Window.Styles>
+
+    <!--  this.Background = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) }; -->
 
     <Grid>
         <Grid.Styles>

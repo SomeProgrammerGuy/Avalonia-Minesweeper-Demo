@@ -7,18 +7,22 @@ https://github.com/AvaloniaUI/Avalonia
 
 This is not the best platform for writing any game. If writing a game is your aim there are much better cross platform choices.
 
+## Installation
+
 This game requires you to install the .NET Core Runtime for your chosen OS.
 
 https://www.microsoft.com/net/download/
 
 To run the included binary, download Minesweeper-Binary.zip > Unzip > open the containing directory and at a console window type: 
 
+'''
 dotnet Minesweeper.dll
+'''
 
 Avalonia is still in Beta currently but this should run on Windows, macOS and Linux (with a GUI).
 
 
-Minesweeper Play Instructions:
+## Minesweeper Play Instructions
 
 The object of the game is to locate all the mines as quickly as possible. 
 

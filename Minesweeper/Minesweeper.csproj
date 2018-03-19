@@ -19,22 +19,22 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.6.1" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Resources\CoolFace.png">
+    <None Update="Assets\CoolFace.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\ExplodedMine.png">
+    <None Update="Assets\ExplodedMine.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Flag.png">
+    <None Update="Assets\Flag.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\HappyFace.png">
+    <None Update="Assets\HappyFace.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Mine.png">
+    <None Update="Assets\Mine.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\UnhappyFace.png">
+    <None Update="Assets\UnhappyFace.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

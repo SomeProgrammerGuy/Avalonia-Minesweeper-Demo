@@ -3,6 +3,7 @@
 
 using Avalonia;
 using Avalonia.Logging.Serilog;
+using Minesweeper.Views;
 
 namespace Minesweeper
 {

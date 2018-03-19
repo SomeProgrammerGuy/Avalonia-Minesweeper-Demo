@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Minesweeper
+namespace Minesweeper.Models
 {
     public class Game
     {
@@ -124,7 +124,6 @@ namespace Minesweeper
         /// non mine tiles that are revealed the game is won.
         /// </summary>
         /// <returns></returns>
-
         private bool IsGameWon()
         {
             int revealedTileCount = 0;
@@ -143,6 +142,11 @@ namespace Minesweeper
             return revealedTileCount == (_rowCount * _columnCount) - _mineCount ? true : false;
         }
 
+        /// <summary>
+        /// Recursively reveal empty tiles from a specific tile at [row,column].
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
         private void ExpandEmptyTile(int row, int column)
         {
             for (int r = row - 1; r <= row + 1; ++r)
@@ -162,6 +166,11 @@ namespace Minesweeper
             }
         }
 
+        /// <summary>
+        /// Add mines to random tiles in the game grid.
+        /// </summary>
+        /// <param name="startRow"></param>
+        /// <param name="startColumn"></param>
         private void AddMinesToGameGrid(int startRow, int startColumn)
         {
             Random random = new Random();
@@ -186,6 +195,10 @@ namespace Minesweeper
             }
         }
 
+        /// <summary>
+        /// Calculate the number of mines that surround each tile 
+        /// for every tile in the game grid.
+        /// </summary>
         private void AddNumberOfSurroundingMinesToGameGrid()
         {
             for (int row = 0; row < _rowCount; row++)
@@ -200,6 +213,16 @@ namespace Minesweeper
             }
         }
 
+        /// <summary>
+        /// Count the number of mines surrounding any tile within the grid.
+        /// 
+        /// Each tile that isnt on any edge position of the grid will have eight
+        /// surrounding tiles. Tiles at any edge position will have less so we need
+        /// to ignore any tiles that are outside the edge positions.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        /// <returns></returns>
         private int GetNumberOfSurroundingMines(int row, int column)
         {
             int mineCount = 0;
@@ -218,6 +241,13 @@ namespace Minesweeper
             return mineCount;
         }
         
+        /// <summary>
+        /// Check a tiles [row,column] position to verify that it is
+        /// a valid position within the game grid.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        /// <returns>True, if the tile is inside the game grid.</returns>
         private bool IsInsideGameGrid(int row, int column)
         {
             return row >= 0 && column >= 0 && row < _rowCount && column < _columnCount;
