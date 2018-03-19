@@ -11,6 +11,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Markup.Xaml;
 using Avalonia.Interactivity;
 using Avalonia.Input;
+using Avalonia.Threading;
 
 namespace Minesweeper
 {
@@ -29,6 +30,9 @@ namespace Minesweeper
         Bitmap _mineBitmap;
         Bitmap _explodedMineBitmap;
 
+        private TextBox _timer;
+
+
         private Button _restartButton;
 
         private TextBox _flagScore;
@@ -36,6 +40,8 @@ namespace Minesweeper
         private Grid _buttonGridPlaceholder;
 
         private Button[,] _displayGrid = new Button[ROW_COUNT, COLUMN_COUNT];
+
+        DispatcherTimer _dispatcherTimer;
 
         Game _game;
 
@@ -69,6 +75,8 @@ namespace Minesweeper
             // Apply the color to the main window.
             this.Background = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) };
 
+            _timer = this.FindControl<TextBox>("timer");
+
             // You need to get XAML controls in Avalonia manually. 
             _restartButton = this.FindControl<Button>("restart");
             _restartButton.Click += new EventHandler<RoutedEventArgs>(OnRestartButtonClick);
@@ -82,11 +90,33 @@ namespace Minesweeper
 
         private void RestartGame()
         {
+            _dispatcherTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, UpdateTimer);
+
             _game.Start();
 
             ResetEmptyButtonGrid();
 
+            _timer.Text = "0";
+
             PaintGame();
+        }
+
+        private void UpdateTimer(object sender, EventArgs e)
+        {
+            _game.Timer++;
+
+            if (_game.Timer <= 999)
+            {
+                // Display timer.
+                _timer.Text = _game.Timer.ToString();
+            }
+            else
+            {
+                if (_dispatcherTimer != null)
+                {
+                    _dispatcherTimer.Stop();
+                }
+            }
         }
 
         private void CreateEmptyButtonGrid()
@@ -153,6 +183,17 @@ namespace Minesweeper
                 if (e.MouseButton == MouseButton.Left)
                 {
                     _game.RevealTile(row, column);
+
+                    // Start the timer after the first tile is opened.
+                    if (_game.State == GameState.Start)
+                    {
+                        _game.State = GameState.Running;
+
+                        if (_dispatcherTimer != null)
+                        {
+                            _dispatcherTimer.Start();
+                        }
+                    }
                 }
                 else if (e.MouseButton == MouseButton.Right)
                 {
@@ -200,10 +241,20 @@ namespace Minesweeper
             if (_game.State == GameState.Lost)
             {
                 restartButtonBitmapSource = _unhappyFaceBitmap;
+
+                if (_dispatcherTimer != null)
+                {
+                    _dispatcherTimer.Stop();
+                }
             }
             else if (_game.State == GameState.Won)
             {
                 restartButtonBitmapSource = _coolFaceBitmap;
+
+                if (_dispatcherTimer != null)
+                {
+                    _dispatcherTimer.Stop();
+                }
             }
             else
             {
@@ -272,6 +323,18 @@ namespace Minesweeper
                             else if (_game.GameGrid[row, column].Value == 4)
                             {
                                 _displayGrid[row, column].Foreground = Brushes.Purple;
+                            }
+                            else if (_game.GameGrid[row, column].Value == 5)
+                            {
+                                _displayGrid[row, column].Foreground = Brushes.Orange;
+                            }
+                            else if (_game.GameGrid[row, column].Value == 6)
+                            {
+                                _displayGrid[row, column].Foreground = Brushes.Pink;
+                            }
+                            else if (_game.GameGrid[row, column].Value == 7)
+                            {
+                                _displayGrid[row, column].Foreground = Brushes.Yellow;
                             }
                             else 
                             {

@@ -13,6 +13,8 @@ namespace Minesweeper
 
         private int _activeFlags;
 
+        public int Timer { get; set; }
+
         public int FlagScore
         {
             get { return _mineCount - _activeFlags; }
@@ -38,6 +40,7 @@ namespace Minesweeper
         {
             State = GameState.Start;
 
+            Timer = 0;
             _activeFlags = 0;
 
             InitialiseGameGrid();
@@ -69,8 +72,6 @@ namespace Minesweeper
 
             if (State == GameState.Start)
             {
-                State = GameState.Running;
-
                 AddMinesToGameGrid(row, column);
 
                 AddNumberOfSurroundingMinesToGameGrid();
