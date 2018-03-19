@@ -15,9 +15,9 @@ https://www.microsoft.com/net/download/
 
 To run the included binary, download Minesweeper-Binary.zip > Unzip > open the containing directory and at a console window type: 
 
-'''
+```
 dotnet Minesweeper.dll
-'''
+```
 
 Avalonia is still in Beta currently but this should run on Windows, macOS and Linux (with a GUI).
 
