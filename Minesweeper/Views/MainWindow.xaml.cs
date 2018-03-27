@@ -61,6 +61,8 @@ namespace Minesweeper.Views
         {
             AvaloniaXamlLoader.Load(this);
 
+            // this.DataContext = this;
+
             // Path.Combine with the file name doesnt create the right cross platform folder
             // slash so Path.DirectorySeparatorChar has been used before the filename.
 

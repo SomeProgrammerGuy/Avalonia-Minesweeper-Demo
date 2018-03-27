@@ -6,13 +6,7 @@
         MinWidth="440" MaxWidth="440"
         Background="#bdbdbd">
 
-    <Window.Styles>
-        <Style Selector="Button:disabled">
-            <Setter Property="Opacity" Value="1"/>
-        </Style>
-    </Window.Styles>
-
-    <!--  this.Background = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) }; -->
+    <!--  Comments -->
 
     <Grid>
         <Grid.Styles>
