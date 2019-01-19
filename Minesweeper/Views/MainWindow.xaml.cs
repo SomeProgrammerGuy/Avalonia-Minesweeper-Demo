@@ -153,7 +153,7 @@ namespace Minesweeper.Views
                         Margin              = new Thickness((row * BUTTON_SIZE), (column * BUTTON_SIZE), 0.0, 0.0),
                         Padding             = new Thickness(0,2,0,0),
                         Background          = new SolidColorBrush { Color = Color.FromRgb(189, 189, 189) },
-                        BorderThickness     = 1.0,
+                        BorderThickness     = new Thickness(1,1,1,1),
                         BorderBrush         = new SolidColorBrush { Color = Color.FromRgb(123, 123, 123) },
                         FontSize            = 15,
                         FontWeight          = FontWeight.ExtraBold
