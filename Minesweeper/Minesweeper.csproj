@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Authors>William Humphreys</Authors>
+    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+	<Authors>William Humphreys</Authors>
     <Company />
     <Copyright>William Humphreys</Copyright>
   </PropertyGroup>
@@ -10,13 +10,13 @@
     <Compile Update="**\*.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="**\*.xaml">
+    <AvaloniaResource Include="**\*.xaml">
       <SubType>Designer</SubType>
-    </EmbeddedResource>
+    </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.7.1-build989-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.7.1-build989-beta" />
+    <PackageReference Include="Avalonia" Version="0.8.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.8.1" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Assets\CoolFace.png">

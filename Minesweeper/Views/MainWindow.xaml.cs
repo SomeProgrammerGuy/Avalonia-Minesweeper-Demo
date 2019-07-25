@@ -19,9 +19,9 @@ namespace Minesweeper.Views
     public class MainWindow : Window
     {
         const int COLUMN_COUNT = 16;
-        const int ROW_COUNT    = 16;
-        const int MINE_COUNT   = 40;
-        const int BUTTON_SIZE  = 25;
+        const int ROW_COUNT = 16;
+        const int MINE_COUNT = 40;
+        const int BUTTON_SIZE = 25;
 
         Bitmap _happyFaceBitmap;
         Bitmap _unhappyFaceBitmap;
@@ -48,7 +48,6 @@ namespace Minesweeper.Views
         public MainWindow()
         {
             InitializeComponent();
-
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -76,7 +75,7 @@ namespace Minesweeper.Views
 
             // You need to get a handle to the XAML controls in Avalonia manually.
             _timer = this.FindControl<TextBox>("timer");
-                         
+
             _restartButton = this.FindControl<Button>("restart");
             _restartButton.Click += new EventHandler<RoutedEventArgs>(OnRestartButtonClick);
 
@@ -89,7 +88,7 @@ namespace Minesweeper.Views
 
             CreateEmptyButtonGrid();
         }
-
+    
         /// <summary>
         /// Reset and restart the game.
         /// </summary>
